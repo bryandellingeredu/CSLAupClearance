@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    height: 200px;
+    background-color: #221F20;
+}
+.red {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+.white {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 3;
+}
+.blue {
+    padding-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.logo-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+  }
+  
+  .banner-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+  }

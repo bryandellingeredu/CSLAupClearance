@@ -1,3 +1,5 @@
+
+
 .container {
     display: flex;
     height: 200px;
@@ -38,3 +40,19 @@
     width: auto;
     height: auto;
   }
+
+  .homePageContainer {
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column; /* Adjust this as needed */
+    background-color: #D5D5D7;
+    height: 100vh; /* Fill the entire viewport height */
+    align-items: center;
+  }
+
+  .right {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+

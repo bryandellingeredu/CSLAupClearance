@@ -4,16 +4,18 @@ import { useEffect, useState } from 'react';
 import { Dimmer,  Icon, Loader, } from 'semantic-ui-react';
 import { useStore } from '../../app/stores/store';
 import { observer } from 'mobx-react-lite';
+import ClearanceWrapper from '../clearance/clearanceWrapper';
 
 function useIsEduSignedIn() {
   const [isEduSignedIn, setIsEduSignedIn] = useState(false);
   const { userStore } = useStore();
-  const {  login } = userStore;
+  const {  login, logout } = userStore;
 
   useEffect(() => {
     const updateState = async () => {
       const provider = Providers.globalProvider;
       const signedIn = provider && provider.state === ProviderState.SignedIn;
+      const signedOut = provider && provider.state === ProviderState.SignedOut;
       setIsEduSignedIn(signedIn);
 
       if (signedIn) {
@@ -24,6 +26,8 @@ function useIsEduSignedIn() {
         } catch (error) {
           console.error('Error getting access token', error);
         }
+      } else if (signedOut){
+        logout();
       }
     };
 
@@ -50,11 +54,17 @@ export default observer (function HomePage() {
           <Login />
         </div>
       }
-
+      
+     
       <div className='homePageContainer'>
+        {!isEduSignedIn && 
+        <>
         <Icon name='shield alternate' size='massive' style={{ color: '#333F50' }} circular></Icon>
         <h1 style={{ fontSize: '3em' }}>G2 CLEARANCE</h1>
         <h2>LOG IN WITH YOUR ARMY CAC</h2>
+        </>
+       }
+       {isEduSignedIn && userStore.token && <ClearanceWrapper />}
 
         {loggingIn &&
           <Dimmer active>

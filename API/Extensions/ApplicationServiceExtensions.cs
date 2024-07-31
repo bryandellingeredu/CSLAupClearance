@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.EventUsers;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 public static class ApplicationServiceExtensions
@@ -19,6 +20,8 @@ public static class ApplicationServiceExtensions
                 policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
             });
         });
+
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly));
 
         return services;
     }

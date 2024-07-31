@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Data;
+using API.Services;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -16,12 +18,30 @@ namespace API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly TokenService _tokenService;
 
-
-             public AccountController(UserManager<IdentityUser> userManager)
+             public AccountController(UserManager<IdentityUser> userManager, TokenService tokenService)
             {
                _userManager = userManager;
+               _tokenService = tokenService;    
             }
+
+               [HttpGet]
+        public async Task<ActionResult<UserDTO>> GetCurrentUser()
+        {
+            var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+            var roles = await _userManager.GetRolesAsync(user);
+            UserDTO userDTO = new UserDTO
+            {
+                Mail = user.Email,
+                UserName = user.UserName,
+                Token =  _tokenService.CreateToken(user, User.FindFirstValue(ClaimTypes.GivenName)),
+                DisplayName = User.FindFirstValue(ClaimTypes.GivenName),
+                //Roles = roles.ToArray()
+            };
+
+            return Ok(userDTO);
+        }
 
                 [AllowAnonymous]
                  [HttpPost("login")]
@@ -48,7 +68,7 @@ namespace API.Controllers
                    {
                     Mail = user.Email,
                     UserName = user.UserName,
-                   // Token = await _tokenService.CreateToken(user, graphUser.DisplayName),
+                    Token =  _tokenService.CreateToken(user, displayName),
                     DisplayName = displayName,
                   // Roles = roles.ToArray()
                    };

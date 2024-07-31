@@ -1,9 +1,10 @@
 import { Outlet } from "react-router-dom"
-import { Container, Image } from "semantic-ui-react"
+import { Container} from "semantic-ui-react"
 
 
 
 function App() {
+
 
 
   return (

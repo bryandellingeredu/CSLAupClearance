@@ -34,7 +34,7 @@ export default observer(function ClearanceTableRow({eventUser} : Props){
     <div className="event-content">
       <Popup
         trigger={
-          <Button icon size="tiny" className="info-button">
+          <Button icon size="tiny" className="info-button" circular color='black'>
             <Icon name="info" />
           </Button>
         }

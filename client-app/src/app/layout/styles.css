@@ -57,3 +57,19 @@
     background-color: #D5D5D7;
   }
 
+  .event-cell {
+    position: relative;
+  }
+  
+  .event-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .info-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+

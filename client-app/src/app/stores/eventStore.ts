@@ -34,4 +34,8 @@ export default class EventStore {
     setLoadingInitial = (state : boolean) => {
         this.loadingInitial = state;
       };
+
+      getEventById = (eventId: number): Event | undefined => {
+        return this.eventRegistry.get(eventId);
+    }
 }

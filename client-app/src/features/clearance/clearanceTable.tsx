@@ -8,7 +8,7 @@ import { EventUser } from "../../app/models/eventUser";
 
 export default observer(function ClearanceTable() {
     const { eventUserStore, eventStore } = useStore();
-    const {loadEvents} = eventStore
+    const { loadEvents } = eventStore;
     const { eventUsers, loadingInitial, loadEventUsers } = eventUserStore;
     const [sort, setSort] = useState('lastDesc');
     const [sortedEventUsers, setSortedEventUsers] = useState<EventUser[]>([]);
@@ -55,10 +55,10 @@ export default observer(function ClearanceTable() {
 
         switch (sort) {
             case 'clearedAsc':
-                //filteredUsers.sort((a, b) => a.cleared.localeCompare(b.cleared));
+                filteredUsers.sort((a, b) => Number(a.cleared) - Number(b.cleared));
                 break;
             case 'clearedDesc':
-                //filteredUsers.sort((a, b) => b.cleared.localeCompare(a.cleared));
+                filteredUsers.sort((a, b) => Number(b.cleared) - Number(a.cleared));
                 break;
             case 'lastAsc':
                 filteredUsers.sort((a, b) => b.lastName.localeCompare(a.lastName));
@@ -90,7 +90,7 @@ export default observer(function ClearanceTable() {
                 .map(user => user[key])
                 .filter(value => typeof value !== 'boolean')
         )].sort((a, b) => 
-            a.toString().localeCompare(b.toString())
+            a!.toString().localeCompare(b!.toString())
         );
     };
 
@@ -135,7 +135,7 @@ export default observer(function ClearanceTable() {
                     </TableRow>
                     <TableRow>
                         <TableHeaderCell>
-                        <SegmentGroup horizontal>
+                            <SegmentGroup horizontal>
                                 <Segment>
                                     <Radio
                                         label='Show All'
@@ -163,32 +163,32 @@ export default observer(function ClearanceTable() {
                                         onChange={handleClearedFilterChange}
                                     />
                                 </Segment>
-                    </SegmentGroup>
+                            </SegmentGroup>
                         </TableHeaderCell>
                         <TableHeaderCell>
-                            <Input fluid  value={filters.lastName} onChange={(e) => handleFilterChange(e, 'lastName')}  list="lastName-options" icon='search'/>
+                            <Input fluid value={filters.lastName} onChange={(e) => handleFilterChange(e, 'lastName')} list="lastName-options" icon='search' />
                             <datalist id="lastName-options">
                                 {uniqueValues('lastName').map(value => (
-                                    <option key={value} value={value} />
+                                    <option key={value!.toString()} value={value!.toString()} />
                                 ))}
                             </datalist>
                         </TableHeaderCell>
                         <TableHeaderCell>
-                            <Input fluid  value={filters.firstName} onChange={(e) => handleFilterChange(e, 'firstName')} list="firstName-options" icon='search'/>
+                            <Input fluid value={filters.firstName} onChange={(e) => handleFilterChange(e, 'firstName')} list="firstName-options" icon='search' />
                             <datalist id="firstName-options">
                                 {uniqueValues('firstName').map(value => (
-                                    <option key={value} value={value} />
+                                    <option key={value!.toString()} value={value!.toString()} />
                                 ))}
                             </datalist>
                         </TableHeaderCell>
                         <TableHeaderCell>
-                            
+
                         </TableHeaderCell>
                         <TableHeaderCell>
-                            <Input fluid  value={filters.eventName} onChange={(e) => handleFilterChange(e, 'eventName')} list="eventName-options" icon='search'/>
+                            <Input fluid value={filters.eventName} onChange={(e) => handleFilterChange(e, 'eventName')} list="eventName-options" icon='search' />
                             <datalist id="eventName-options">
                                 {uniqueValues('eventName').map(value => (
-                                    <option key={value} value={value} />
+                                    <option key={value!.toString()} value={value!.toString()} />
                                 ))}
                             </datalist>
                         </TableHeaderCell>

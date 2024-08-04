@@ -6,4 +6,6 @@ export interface EventUser{
     middleInitial: string
     eventName: string
     cleared: boolean
+    clearedBy: string
+    clearedAt: Date | null
 }

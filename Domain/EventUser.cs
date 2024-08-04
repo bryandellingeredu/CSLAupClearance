@@ -16,5 +16,8 @@ namespace Domain
         public string MiddleInitial { get; set; }
         public string EventName { get; set; }
         public bool Cleared {get; set;}
+        public string ClearedBy {get; set;}
+        public DateTime? ClearedAt {get; set;}
+
     }
 }

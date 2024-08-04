@@ -31,6 +31,7 @@ const requests = {
 
   const EventUsers = {
     list: () => requests.get<EventUser[]>('/eventUsers'),
+    update: (id: number, cleared: boolean) => axios.put<void>(`/eventUsers/${id}`, {cleared}),
   }
 
   const Events = {

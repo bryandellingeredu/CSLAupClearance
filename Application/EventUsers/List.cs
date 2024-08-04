@@ -38,6 +38,9 @@ namespace Application.EventUsers
                         ,c.[MiddleInitial]
                         ,c.[EventId] 
                         ,e.[Name]
+                        ,c.[AccountCleared]
+                        ,c.[AccountClearedBy]
+                        ,c.[AccountClearedDate]
                         FROM [CSLNet].[dbo].[CSLEventAUP_Users] c
                         JOIN [CSLNet].[dbo].[CSLEventAUP_Events] e ON c.EventId = e.ID
                         WHERE e.Active = 1
@@ -57,7 +60,9 @@ namespace Application.EventUsers
                                     LastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? null : reader.GetString(reader.GetOrdinal("LastName")),
                                     MiddleInitial = reader.IsDBNull(reader.GetOrdinal("MiddleInitial")) ? null : reader.GetString(reader.GetOrdinal("MiddleInitial")),
                                     EventName = reader.IsDBNull(reader.GetOrdinal("Name")) ? null : reader.GetString(reader.GetOrdinal("Name")),
-                                    Cleared = false
+                                    ClearedBy = reader.IsDBNull(reader.GetOrdinal("AccountClearedBy")) ? null : reader.GetString(reader.GetOrdinal("AccountClearedBy")),
+                                    ClearedAt = reader.IsDBNull(reader.GetOrdinal("AccountClearedDate")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("AccountClearedDate")),
+                                    Cleared = !reader.IsDBNull(reader.GetOrdinal("AccountCleared")) && reader.GetBoolean(reader.GetOrdinal("AccountCleared"))
                                 };
                                 eventUsers.Add(eventUser);
                             }

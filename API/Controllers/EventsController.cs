@@ -1,6 +1,7 @@
 ﻿using Application.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -8,5 +9,9 @@ namespace API.Controllers
     {
         [HttpGet]
         public async Task<ActionResult> GetEvents() => HandleResult(await Mediator.Send(new List.Query()));
+
+      
     }
+
+  
 }

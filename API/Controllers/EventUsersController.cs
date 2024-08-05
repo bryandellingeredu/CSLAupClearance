@@ -8,7 +8,6 @@ namespace API.Controllers
 {
     public class EventUsersController : BaseApiController
     {
-        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult> GetEventUsers() => HandleResult(await Mediator.Send(new List.Query()));
 

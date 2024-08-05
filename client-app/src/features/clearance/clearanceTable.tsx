@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from '../../app/stores/store';
 import { useEffect, useState } from "react";
 import LoadingComponent from "../../app/layout/loadingComponent";
-import { Icon, Input, Radio, Segment, SegmentGroup, Table, TableBody, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react";
+import { Button, Icon, Input, Radio, Segment, SegmentGroup, Table, TableBody, TableHeader, TableHeaderCell, TableRow } from "semantic-ui-react";
 import ClearanceTableRow from "./clearanceTableRow";
 import { EventUser } from "../../app/models/eventUser";
 
@@ -94,6 +94,32 @@ export default observer(function ClearanceTable() {
         );
     };
 
+    const exportToExcel = () => {
+        const protocol = window.location.protocol;
+       const baseUrl  = protocol === 'https:' ?  import.meta.env.VITE_API_URL : import.meta.env.VITE_API_URL_HTTP;
+       const url = `${baseUrl}/ExportToExcel`
+       if(sortedEventUsers && sortedEventUsers.length > 0){
+        const data = {eventUserIds: sortedEventUsers.map(x => x.id)};
+        fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+            .then(res => res.blob())
+            .then(blob => {
+              const url = window.URL.createObjectURL(new Blob([blob]));
+              const link = document.createElement("a");
+              link.href = url;
+              link.setAttribute("download", "eventusers.csv");
+              document.body.appendChild(link);
+              link.click();
+            });
+       }
+
+    }
+
     if (loadingInitial) return <LoadingComponent content='Loading app' />
 
     return (
@@ -126,11 +152,21 @@ export default observer(function ClearanceTable() {
                             <h1>MIDDLE</h1>
                         </TableHeaderCell>
                         <TableHeaderCell>
-                            <h1>
-                                <span style={{ paddingRight: '20px' }}>EVENT</span>
-                                <Icon name='arrow up' color={sort === 'eventDesc' ? 'blue' : undefined} style={{ cursor: 'pointer' }} onClick={() => handleSortChange('eventDesc')} />
-                                <Icon name='arrow down' color={sort === 'eventAsc' ? 'blue' : undefined} style={{ cursor: 'pointer' }} onClick={() => handleSortChange('eventAsc')} />
-                            </h1>
+                     
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                    <h1>
+                                        <span style={{ paddingRight: '20px' }}>EVENT</span>
+                                        <Icon name='arrow up' color={sort === 'eventDesc' ? 'blue' : undefined} style={{ cursor: 'pointer' }} onClick={() => handleSortChange('eventDesc')} />
+                                        <Icon name='arrow down' color={sort === 'eventAsc' ? 'blue' : undefined} style={{ cursor: 'pointer' }} onClick={() => handleSortChange('eventAsc')} />
+                                    </h1>
+                                </div>
+                                <Button icon labelPosition='left' color='black' onClick={exportToExcel}>
+                                    <Icon name='download' />
+                                    EXPORT TO EXCEL
+                                </Button>
+                            </div>
+                        
                         </TableHeaderCell>
                     </TableRow>
                     <TableRow>

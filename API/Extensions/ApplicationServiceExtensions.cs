@@ -1,4 +1,6 @@
-﻿using Application.EventUsers;
+﻿using API.Services;
+using Application.EventUsers;
+using Application.Repository;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -22,6 +24,9 @@ public static class ApplicationServiceExtensions
         });
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(List.Handler).Assembly));
+
+        services.AddScoped<IEventUserService, EventUserService>();
+        services.AddScoped<IEventService, EventService>();
 
         return services;
     }

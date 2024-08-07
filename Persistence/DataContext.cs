@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Domain;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence
@@ -7,7 +8,10 @@ namespace Persistence
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
+              
         }
+
+         public DbSet<AllowedUser> AllowedUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

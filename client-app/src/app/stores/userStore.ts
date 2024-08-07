@@ -1,47 +1,104 @@
 import { makeAutoObservable, reaction } from "mobx";
 import { User } from "../models/user";
 import agent from "../api/agent";
+import { AllowedUser } from "../models/allowedUser";
+import { toast } from "react-toastify";
 
 export default class UserStore {
     user: User | null = null;
     loggingIn: boolean = false;
     token: string | null | undefined = localStorage.getItem('g2jwt');
     appLoaded = false;
+    allowedUserRegistry = new Map<string, AllowedUser>();
+    loadingInitial = false;
 
     constructor() {
-       debugger;
         makeAutoObservable(this);
         reaction(
             () => this.token,
             token => {
-              debugger;
                 if (token){
-                    debugger;
                     localStorage.setItem('g2jwt', token);
                 } else {
                     localStorage.removeItem('g2jwt');
-                    debugger;
                 }
             }
         )
     }
 
+    get allowedUsers() {
+      return Array.from(this.allowedUserRegistry.values()).sort((a, b) => {
+        if (a.email < b.email) return -1;
+        if (a.email > b.email) return 1;
+        return 0;
+      });
+    }
+
+    loadAllowedUsers = async () =>{
+      this.setLoadingInitial(true);
+   try{
+      const allowedUsers = await agent.AllowedUsers.list();
+      allowedUsers.forEach(user => {
+          this.allowedUserRegistry.set(user.id, user);
+      })
+      this.setLoadingInitial(false);
+   } catch(error) {
+    console.log(error);
+    this.setLoadingInitial(false);
+   }
+  }
+
+  updateAllowedUser = async (allowedUser : AllowedUser) => {
+    this.allowedUserRegistry.set(allowedUser.id, allowedUser);
+    try{
+     await agent.AllowedUsers.update(allowedUser)
+    }catch(error) {
+      toast.error('Error Saving to Database', {
+        position: 'top-center',
+        autoClose: 25000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
+    console.log(error);
+   }
+
+  }
+
+  deleteAllowedUser = async (id : string) =>{
+    this.allowedUserRegistry.delete(id);
+    try{
+      await agent.AllowedUsers.delete(id)
+    }catch(error) {
+      toast.error('Error Deleting User', {
+        position: 'top-center',
+        autoClose: 25000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
+         console.log(error);
+       }
+    }
+  
 
     login = async (graphtoken: string) => {
-      debugger;
         this.setLoggingIn(true);
         try {
-          debugger;
           const user = await agent.Account.login(graphtoken);
           this.setUser(user);
           this.setToken(user.token);
         } catch (error) {
-          debugger;
           this.user = null;
           this.setToken(null)
           console.log(error);
         } finally {
-            debugger;
             this.setLoggingIn(false);
         }
       };
@@ -77,6 +134,8 @@ export default class UserStore {
         this.appLoaded = true;
       };
     
-
+      setLoadingInitial = (state : boolean) => {
+        this.loadingInitial = state;
+      };
 
 }

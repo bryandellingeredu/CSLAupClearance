@@ -10,38 +10,29 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Data;
 using API.Services;
 using System.Security.Claims;
+using Application.Repository;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
+
     public class AccountController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly TokenService _tokenService;
+        private readonly IAllowedUserService _allowedUserService;
 
-             public AccountController(UserManager<IdentityUser> userManager, TokenService tokenService)
+        public AccountController(
+            UserManager<IdentityUser> userManager, TokenService tokenService, IAllowedUserService allowedUserService)
             {
                _userManager = userManager;
-               _tokenService = tokenService;    
-            }
-
-               [HttpGet]
-        public async Task<ActionResult<UserDTO>> GetCurrentUser()
-        {
-            var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
-            var roles = await _userManager.GetRolesAsync(user);
-            UserDTO userDTO = new UserDTO
-            {
-                Mail = user.Email,
-                UserName = user.UserName,
-                Token =  _tokenService.CreateToken(user, User.FindFirstValue(ClaimTypes.GivenName)),
-                DisplayName = User.FindFirstValue(ClaimTypes.GivenName),
-                //Roles = roles.ToArray()
-            };
-
-            return Ok(userDTO);
+               _tokenService = tokenService;
+               _allowedUserService = allowedUserService;
         }
+
+              
 
                 [AllowAnonymous]
                  [HttpPost("login")]
@@ -64,13 +55,17 @@ namespace API.Controllers
                         return BadRequest("User creation failed");
                     }
                    }
-                   UserDTO userDTO = new UserDTO
+                    List<string> roles = new List<string>();
+                    if (await _allowedUserService.IsVerifiedUser(email)) roles.Add("verified");
+                    if (await _allowedUserService.IsAdmin(email)) roles.Add("admin");
+
+            UserDTO userDTO = new UserDTO
                    {
                     Mail = user.Email,
                     UserName = user.UserName,
                     Token =  _tokenService.CreateToken(user, displayName),
                     DisplayName = displayName,
-                  // Roles = roles.ToArray()
+                    Roles = roles.ToArray()
                    };
                  return Ok(userDTO);
         }

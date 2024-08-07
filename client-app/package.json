@@ -14,14 +14,17 @@
     "@microsoft/mgt-element": "^4.2.3",
     "@microsoft/mgt-msal2-provider": "^4.2.3",
     "@microsoft/mgt-react": "^4.2.3",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.7.2",
     "mobx": "^6.13.1",
     "mobx-react-lite": "^4.0.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",
+    "react-toastify": "^10.0.5",
     "semantic-ui-css": "^2.5.0",
-    "semantic-ui-react": "^2.1.5"
+    "semantic-ui-react": "^2.1.5",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

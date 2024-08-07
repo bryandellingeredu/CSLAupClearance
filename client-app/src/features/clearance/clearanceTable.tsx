@@ -7,9 +7,10 @@ import ClearanceTableRow from "./clearanceTableRow";
 import { EventUser } from "../../app/models/eventUser";
 
 export default observer(function ClearanceTable() {
-    const { eventUserStore, eventStore } = useStore();
+    const { eventUserStore, eventStore, userStore } = useStore();
     const { loadEvents } = eventStore;
     const { eventUsers, loadingInitial, loadEventUsers } = eventUserStore;
+    const {allowedUsers, loadAllowedUsers} = userStore
     const [sort, setSort] = useState('lastDesc');
     const [sortedEventUsers, setSortedEventUsers] = useState<EventUser[]>([]);
     const [filters, setFilters] = useState({
@@ -18,6 +19,10 @@ export default observer(function ClearanceTable() {
         firstName: '',
         eventName: ''
     });
+
+    useEffect(() => {
+        loadAllowedUsers();
+    },[userStore]);
 
     useEffect(() => {
         loadEvents();

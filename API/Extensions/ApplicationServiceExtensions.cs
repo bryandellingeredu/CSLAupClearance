@@ -27,6 +27,7 @@ public static class ApplicationServiceExtensions
 
         services.AddScoped<IEventUserService, EventUserService>();
         services.AddScoped<IEventService, EventService>();
+        services.AddScoped<IAllowedUserService, AllowedUserService>();
 
         return services;
     }

@@ -1,11 +1,10 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, ScrollRestoration } from "react-router-dom"
 import { Container} from "semantic-ui-react"
-
-
+import ModalContainer from "../common/modals/ModalContainer"
+import { ToastContainer } from "react-toastify"
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-
-
 
   return (
     <>
@@ -21,6 +20,19 @@ function App() {
         <img src={`${import.meta.env.BASE_URL}/assets/awcLogo.png`} className="logo-image" />
         </div>
     </div>
+    <ScrollRestoration />
+      <ModalContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Outlet />
     </Container>
     </>

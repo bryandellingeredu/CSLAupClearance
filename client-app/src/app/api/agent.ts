@@ -3,6 +3,7 @@ import { User } from '../models/user';
 import { store } from '../stores/store';
 import { EventUser } from '../models/eventUser';
 import { Event } from '../models/event';
+import { AllowedUser } from '../models/allowedUser';
 
 const protocol = window.location.protocol;
 
@@ -38,10 +39,17 @@ const requests = {
     list: () => requests.get<Event[]>('/events'),
   }
 
+  const AllowedUsers = {
+    list: () => requests.get<AllowedUser[]>('/allowedUsers'),
+    update: (allowedUser: AllowedUser) => axios.post<void>('/allowedUsers',allowedUser),
+    delete: (id : string) => axios.delete<void>(`/allowedUsers/${id}`)
+  }
+
   const agent = {
     Account,
     EventUsers,
-    Events
+    Events,
+    AllowedUsers
   }
 
   export default agent;

@@ -12,6 +12,7 @@ namespace Persistence
         }
 
          public DbSet<AllowedUser> AllowedUsers { get; set; }
+         public DbSet<EmailNotification> EmailNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

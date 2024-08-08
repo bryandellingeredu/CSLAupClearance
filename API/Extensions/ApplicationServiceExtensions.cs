@@ -1,4 +1,5 @@
-﻿using API.Services;
+﻿using API.BackGroundJobs;
+using API.Services;
 using Application.EventUsers;
 using Application.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IEventUserService, EventUserService>();
         services.AddScoped<IEventService, EventService>();
         services.AddScoped<IAllowedUserService, AllowedUserService>();
+        services.AddScoped<BackGroundJobs, BackGroundJobs>();
 
         return services;
     }

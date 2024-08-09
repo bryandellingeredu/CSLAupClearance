@@ -11,6 +11,8 @@ using System.Data;
 using API.Services;
 using System.Security.Claims;
 using Application.Repository;
+using Newtonsoft.Json.Linq;
+using Microsoft.Graph.Models;
 
 namespace API.Controllers
 {
@@ -32,15 +34,33 @@ namespace API.Controllers
                _allowedUserService = allowedUserService;
         }
 
-              
+        [HttpGet]
+        public async Task<ActionResult<UserDTO>> GetCurrentUser()
+        {
+            var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+            List<string> roles = new List<string>();
+            if (await _allowedUserService.IsVerifiedUser(User.FindFirstValue(ClaimTypes.Email))) roles.Add("verified");
+            if (await _allowedUserService.IsAdmin(User.FindFirstValue(ClaimTypes.Email))) roles.Add("admin");
+            string displayName = User.Claims.FirstOrDefault(claim => claim.Type == "name")?.Value;
+            UserDTO userDTO = new UserDTO
+            {
+                Mail = user.Email,
+                UserName = user.UserName,
+                Token  = string.Empty,
+                DisplayName = User.FindFirstValue(ClaimTypes.GivenName),
+                Roles = roles.ToArray()
+            };
 
-                [AllowAnonymous]
+             return Ok(userDTO);
+        }
+
+        [AllowAnonymous]
                  [HttpPost("login")]
                   public async Task<ActionResult<UserDTO>> Login(GraphTokenDTO graphToken){
                     var h = new JwtSecurityTokenHandler();
                     var tokenS = h.ReadToken(graphToken.Token) as JwtSecurityToken;
                     string email = tokenS.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
-                    string displayName = tokenS.Claims.FirstOrDefault(claim => claim.Type == "name")?.Value;
+                    string displayName = tokenS.Claims.FirstOrDefault(claim => claim.Type == "given_name")?.Value;
                     IdentityUser user = await _userManager.FindByEmailAsync(email);
                     if (user == null)
                     {

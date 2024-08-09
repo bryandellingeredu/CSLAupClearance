@@ -1,105 +1,108 @@
-import { Login } from '@microsoft/mgt-react';
-import { Providers, ProviderState } from '@microsoft/mgt-element';
-import { useEffect, useState } from 'react';
-import { Button, Dimmer,  Icon, Loader, Message, MessageHeader, } from 'semantic-ui-react';
+import { Button, Dimmer, Dropdown, Icon, Loader, Message, MessageHeader, Popup } from 'semantic-ui-react';
 import { useStore } from '../../app/stores/store';
 import { observer } from 'mobx-react-lite';
 import ClearanceWrapper from '../clearance/clearanceWrapper';
 import ManageG2Users from '../admin/manageG2Users';
+import { useEffect } from 'react';
 
-function useIsEduSignedIn() {
-  const [isEduSignedIn, setIsEduSignedIn] = useState(false);
-  const { userStore} = useStore();
-  const {  login, logout } = userStore;
+export default observer(function HomePage() {
+  const { userStore, modalStore } = useStore();
+  const { loggingIn, user, logout } = userStore;
+  const { openModal } = modalStore;
+
+  // Function to handle login
+  const handleLogin = () => {
+    userStore.signInArmy();
+  };
 
   useEffect(() => {
-    const updateState = async () => {
-      const provider = Providers.globalProvider;
-      const signedIn = provider && provider.state === ProviderState.SignedIn;
-      const signedOut = provider && provider.state === ProviderState.SignedOut;
-      setIsEduSignedIn(signedIn);
-
-      if (signedIn) {
-
-        try {
-          const accessToken = await provider.getAccessToken();
-          await login(accessToken);
-        } catch (error) {
-          console.error('Error getting access token', error);
-        }
-      } else if (signedOut){
-        logout();
-      }
-    };
-
-    Providers.onProviderUpdated(updateState);
-    updateState();
-
-    return () => {
-      Providers.removeProviderUpdatedListener(updateState);
-    };
-  }, [ login]);
-
-  return [isEduSignedIn];
-}
-
-export default observer (function HomePage() {
-  const { userStore, modalStore } = useStore();
-  const { loggingIn, user } = userStore;
-  const { openModal } = modalStore;
-  const [isEduSignedIn] = useIsEduSignedIn();
+    userStore.handleGraphRedirect();
+  }, [userStore]);
 
   return (
     <div>
-      {isEduSignedIn &&
-        <div className='right'>
-           {user && user.roles.includes('verified') &&
-            <Button icon labelPosition='left' basic color='black'
-              onClick={() => openModal(<ManageG2Users/>, 'fullscreen')}
-            >
-              <Icon name='user' size='large'/>
-                MANAGE G2 USERS
+
+      <div className='right'>
+        {user && user.roles.includes('verified') && (
+          <Button
+            icon
+            labelPosition='left'
+            basic
+            color='black'
+            onClick={() => openModal(<ManageG2Users />, 'fullscreen')}
+          >
+            <Icon name='cog' size='large' />
+            MANAGE G2 USERS
+          </Button>
+        )}
+
+        {!user  && <div />}
+        {user && 
+        <Popup
+          trigger={
+            <Button icon labelPosition='left'>
+              <Icon name='user' />
+              {user?.mail}
             </Button>
           }
-
-          {(!user || !user.roles || !user.roles.includes('verified')) && <div /> }
-
-          <Login />
-        </div>
+          content={
+            <Button icon labelPosition='left' onClick={logout}>
+              <Icon name='power' color='red' />
+              Logout
+            </Button>
+          }
+          on='click'
+          position='bottom right'
+          openOnTriggerClick
+          closeOnDocumentClick
+          hideOnScroll
+        />
       }
-  
-     
+      </div>
+
       <div className='homePageContainer'>
-        {!isEduSignedIn && 
         <>
-        <Icon name='shield alternate' size='massive' style={{ color: '#333F50' }} circular></Icon>
-        <h1 style={{ fontSize: '3em' }}>G2 CLEARANCE</h1>
-        <h2>LOG IN WITH YOUR ARMY CAC</h2>
+        {!user && 
+        <>
+          <Icon
+            name='shield alternate'
+            size='massive'
+            style={{ color: '#333F50' }}
+            circular
+          />
+          <h1 style={{ fontSize: '3em' }}>G2 CLEARANCE</h1>
+          <h2>LOG IN WITH YOUR ARMY CAC</h2>
+          </>
+        }
         </>
-       }
 
-       {!loggingIn && isEduSignedIn && userStore.token && user && user.roles && user.roles.includes('verified') && <ClearanceWrapper />}
+        {!loggingIn &&
+          userStore.token &&
+          user &&
+          user.roles &&
+          user.roles.includes('verified') && <ClearanceWrapper />}
 
-       {!loggingIn && isEduSignedIn && (!user || !user.roles || !user.roles.includes('verified') ) &&
-         <Message negative icon>
-           <Icon name='exclamation'  />
-         <MessageHeader>
-          YOU ARE NOT AUTHORIZED TO USE THIS APPLICATION
-          </MessageHeader>
-       </Message>
-       }
+        {!loggingIn && user &&
+          ( !user.roles || !user.roles.includes('verified')) && (
+            <Message negative icon>
+              <Icon name='exclamation' />
+              <MessageHeader>YOU ARE NOT AUTHORIZED TO USE THIS APPLICATION</MessageHeader>
+            </Message>
+          )}
 
-
-        {loggingIn &&
+        {loggingIn && (
           <Dimmer active>
             <Loader content='Logging In...' size='huge' />
           </Dimmer>
-        }
+        )}
 
-        {!isEduSignedIn && !loggingIn &&
-          <Login />
-        }
+        {!loggingIn && !user && (
+          <Button onClick={handleLogin} basic color='black'>
+            <Icon name='sign-in' />
+            Sign In
+          </Button>
+        )}
       </div>
     </div>
   );
-})
+});

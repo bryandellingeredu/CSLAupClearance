@@ -10,7 +10,7 @@ export default observer(function ClearanceTable() {
     const { eventUserStore, eventStore, userStore } = useStore();
     const { loadEvents } = eventStore;
     const { eventUsers, loadingInitial, loadEventUsers } = eventUserStore;
-    const {allowedUsers, loadAllowedUsers} = userStore
+    const {loadAllowedUsers} = userStore
     const [sort, setSort] = useState('lastDesc');
     const [sortedEventUsers, setSortedEventUsers] = useState<EventUser[]>([]);
     const [filters, setFilters] = useState({
@@ -44,7 +44,7 @@ export default observer(function ClearanceTable() {
         setFilters({ ...filters, [field]: e.target.value });
     };
 
-    const handleClearedFilterChange = (e: React.FormEvent<HTMLInputElement>, { value }: any) => {
+    const handleClearedFilterChange = (_e: React.FormEvent<HTMLInputElement>, { value }: any) => {
         setFilters({ ...filters, cleared: value });
     };
 

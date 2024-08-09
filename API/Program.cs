@@ -4,6 +4,7 @@ using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -46,20 +47,35 @@ app.UseCors("CorsPolicy");
 //app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = new[] { new NoAuthorizationFilter() } // No authorization needed
+});
 
 app.MapControllers();
 app.MapFallbackToController("Index", "Fallback");
 
-/*var serviceProvider = app.Services;
-var recurringJobManager = serviceProvider.GetRequiredService<IRecurringJobManager>();
-var backgroundJobs = serviceProvider.GetRequiredService<API.BackGroundJobs.BackGroundJobs>();
-recurringJobManager.AddOrUpdate(
-    "EmailNotificationJob",
-    () => backgroundJobs.EmailNotificationJob(),
-    "0 18 * * 0" 
-);*/
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var recurringJobManager = serviceProvider.GetRequiredService<IRecurringJobManager>();
+    var backgroundJobs = serviceProvider.GetRequiredService<API.BackGroundJobs.BackGroundJobs>();
+
+    recurringJobManager.AddOrUpdate(
+        "EmailNotificationJob",
+        () => backgroundJobs.EmailNotificationJob(),
+        "0 18 * * 0"
+    );
+}
 
 
 app.Run();
+
+public class NoAuthorizationFilter : Hangfire.Dashboard.IDashboardAuthorizationFilter
+{
+    public bool Authorize(Hangfire.Dashboard.DashboardContext context) => true;
+}

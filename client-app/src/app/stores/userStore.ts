@@ -75,8 +75,6 @@ export default class UserStore {
           progress: undefined,
           theme: 'colored',
         });
-        sessionStorage.clear();
-        localStorage.clear();
         this.setToken(null);
         this.user = null;
       }
@@ -156,13 +154,10 @@ export default class UserStore {
     };
 
     getUser = async () => {
-      debugger;
       try {
-        debugger;
         const user = await agent.Account.current();
         this.setUser(user);
       } catch (error) {
-        debugger;
         this.setToken(null);
         this.setUser(null);
       }

@@ -43,17 +43,26 @@ namespace API.BackGroundJobs
 
             var unclearedEventUsers = eventUsers.Where(x => !x.Cleared).ToList();
 
-            string body = $"These users have not yet been cleared by the G2 for upcoming CSL Events";
+            string body = "there are no users waiting to be cleared by the G@ for upcoming CSL Events.   <a href='https://apps.armywarcollege.edu/aupclearance'> The G2 Clearance App </a>";
 
-            foreach (var user in unclearedEventUsers.OrderBy(x => x.EventName).ThenBy(x => x.LastName))
+            if (unclearedEventUsers.Any())
             {
-                var evt = events.First(x => x.ID == user.EventId);
-                body = body + $"<p>{user.LastName}, {user.FirstName} for {user.EventName} {evt.StartDate?.ToString("MM/dd/yyyy")}</p>";
+
+                body = $"These users have not yet been cleared by the G2 for upcoming CSL Events";
+
+                foreach (var user in unclearedEventUsers.OrderBy(x => x.EventName).ThenBy(x => x.LastName))
+                {
+                    var evt = events.First(x => x.ID == user.EventId);
+                    body = body + $"<p>{user.LastName}, {user.FirstName} for {user.EventName} {evt.StartDate?.ToString("MM/dd/yyyy")}</p>";
+                }
+
+
+
+                body = body + "<p></p><p></p><p></p> To clear these users go to <a href='https://apps.armywarcollege.edu/aupclearance'> The G2 Clearance App </a> ";
             }
 
 
-
-            body = body + "<p></p><p></p><p></p> To clear these users go to <a href='https://apps.armywarcollege.edu/aupclearance'> The G2 Clearance App </a> ";
+          
 
             Settings s = new Settings();
             var _settings = s.LoadSettings(_config);

@@ -1,4 +1,4 @@
-import { Button, Dimmer, Dropdown, Icon, Loader, Message, MessageHeader, Popup } from 'semantic-ui-react';
+import { Button, Dimmer, Icon, Loader, Message, MessageHeader, Popup } from 'semantic-ui-react';
 import { useStore } from '../../app/stores/store';
 import { observer } from 'mobx-react-lite';
 import ClearanceWrapper from '../clearance/clearanceWrapper';
@@ -23,7 +23,7 @@ export default observer(function HomePage() {
     <div>
 
       <div className='right'>
-        {user && user.roles.includes('verified') && (
+        {user && user.roles.includes('admin') && (
           <Button
             icon
             labelPosition='left'
@@ -35,6 +35,7 @@ export default observer(function HomePage() {
             MANAGE G2 USERS
           </Button>
         )}
+        {user && !user.roles.includes('admin') && <div />}
 
         {!user  && <div />}
         {user && 

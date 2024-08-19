@@ -1,5 +1,6 @@
 using API.BackGroundJobs;
 using API.Extensions;
+using API.Middleware;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +37,8 @@ builder.Services.AddHangfire(configuration => configuration
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
